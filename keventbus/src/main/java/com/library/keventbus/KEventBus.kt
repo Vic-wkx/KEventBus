@@ -5,7 +5,7 @@ object KEventBus {
     private val subscriptionsByEventType = mutableMapOf<Class<*>, MutableList<SubscriberMethod>>()
 
     private val mainPoster = MainPoster(this)
-    private val backgroundPoster = BackgroundPoster(this)
+    private val asyncPoster = AsyncPoster(this)
 
     fun register(obj: Any) {
         // Reflect to get all subscribed methods
@@ -41,8 +41,8 @@ object KEventBus {
                 ThreadMode.MAIN -> {
                     mainPoster.post(event)
                 }
-                ThreadMode.BACKGROUND -> {
-                    backgroundPoster.post(event)
+                ThreadMode.ASYNC -> {
+                    asyncPoster.post(event)
                 }
             }
         }

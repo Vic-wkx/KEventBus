@@ -2,7 +2,7 @@ package com.library.keventbus
 
 import java.util.concurrent.Executors
 
-class BackgroundPoster(private val eventBus: KEventBus) : Runnable {
+class AsyncPoster(private val eventBus: KEventBus) : Runnable {
     private val queue = mutableListOf<Any>()
     private val executors = Executors.newCachedThreadPool()
 

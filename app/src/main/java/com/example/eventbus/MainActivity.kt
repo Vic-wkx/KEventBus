@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             KEventBus.post("I'm a string message.")
         }
         binding.btnThread.setOnClickListener {
-            KEventBus.post(BackgroundEvent("It's a message to background."))
+            KEventBus.post(AsyncEvent("It's an async message."))
         }
         binding.btnSticky.setOnClickListener {
             Toast.makeText(this, "Not supported yet.", Toast.LENGTH_SHORT).show()
@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         binding.tvResult.append("\n$message")
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    fun onBackgroundEvent(event: BackgroundEvent) {
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onAsyncEvent(event: AsyncEvent) {
         Log.d("~~~", "${event.content} ${Thread.currentThread().name}")
     }
 }

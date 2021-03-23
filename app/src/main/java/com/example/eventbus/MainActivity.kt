@@ -2,10 +2,12 @@ package com.example.eventbus
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.example.eventbus.databinding.ActivityMainBinding
 import com.library.keventbus.KEventBus
 import com.library.keventbus.Subscribe
+import com.library.keventbus.ThreadMode
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -22,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             KEventBus.post("I'm a string message.")
         }
         binding.btnThread.setOnClickListener {
-            Toast.makeText(this, "Not supported yet.", Toast.LENGTH_SHORT).show()
+            KEventBus.post(BackgroundEvent("It's a message to background."))
         }
         binding.btnSticky.setOnClickListener {
             Toast.makeText(this, "Not supported yet.", Toast.LENGTH_SHORT).show()
@@ -35,5 +37,10 @@ class MainActivity : AppCompatActivity() {
     @Subscribe
     fun onStringEvent(message: String) {
         binding.tvResult.append("\n$message")
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    fun onBackgroundEvent(event: BackgroundEvent) {
+        Log.d("~~~", "${event.content} ${Thread.currentThread().name}")
     }
 }

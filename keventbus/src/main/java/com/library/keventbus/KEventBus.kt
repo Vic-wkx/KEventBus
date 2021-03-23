@@ -1,10 +1,11 @@
 package com.library.keventbus
 
-import java.lang.reflect.Method
-
 object KEventBus {
 
-    private val subscriptionsByEventType = mutableMapOf<Class<*>, MutableList<Pair<Any, Method>>>()
+    private val subscriptionsByEventType = mutableMapOf<Class<*>, MutableList<SubscriberMethod>>()
+
+    private val mainPoster = MainPoster(this)
+    private val backgroundPoster = BackgroundPoster(this)
 
     fun register(obj: Any) {
         // Reflect to get all subscribed methods
@@ -15,7 +16,7 @@ object KEventBus {
                     if (eventType !in subscriptionsByEventType) {
                         subscriptionsByEventType[eventType] = mutableListOf()
                     }
-                    subscriptionsByEventType[eventType]!!.add(obj to it)
+                    subscriptionsByEventType[eventType]!!.add(SubscriberMethod(obj, it, it.getAnnotation(Subscribe::class.java)!!.threadMode))
                 }
             }
         }
@@ -27,7 +28,7 @@ object KEventBus {
                 if (it.parameterTypes.size == 1) {
                     val event = it.parameterTypes.first()
                     if (event in subscriptionsByEventType) {
-                        subscriptionsByEventType[event]?.remove(obj to it)
+                        subscriptionsByEventType[event]?.remove(SubscriberMethod(obj, it, it.getAnnotation(Subscribe::class.java)!!.threadMode))
                     }
                 }
             }
@@ -36,7 +37,20 @@ object KEventBus {
 
     fun post(event: Any) {
         subscriptionsByEventType[event.javaClass]?.forEach {
-            it.second.invoke(it.first, event)
+            when (it.threadMode) {
+                ThreadMode.MAIN -> {
+                    mainPoster.post(event)
+                }
+                ThreadMode.BACKGROUND -> {
+                    backgroundPoster.post(event)
+                }
+            }
+        }
+    }
+
+    fun invokeSubscriber(event: Any) {
+        subscriptionsByEventType[event.javaClass]?.forEach {
+            it.method(it.eventType, event)
         }
     }
 }

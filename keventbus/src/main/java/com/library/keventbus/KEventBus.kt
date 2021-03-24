@@ -3,6 +3,7 @@ package com.library.keventbus
 object KEventBus {
 
     private val subscriptionsByEventType = mutableMapOf<Class<*>, MutableList<SubscriberMethod>>()
+    private val stickyEvents = mutableMapOf<Class<*>, Any>()
 
     private val mainPoster = MainPoster(this)
     private val asyncPoster = AsyncPoster(this)
@@ -17,6 +18,11 @@ object KEventBus {
                         subscriptionsByEventType[eventType] = mutableListOf()
                     }
                     subscriptionsByEventType[eventType]!!.add(SubscriberMethod(obj, it, it.getAnnotation(Subscribe::class.java)!!.threadMode))
+                    if (it.getAnnotation(Subscribe::class.java)!!.sticky) {
+                        if (stickyEvents[eventType] != null) {
+                            it(obj, stickyEvents[eventType])
+                        }
+                    }
                 }
             }
         }
@@ -46,6 +52,15 @@ object KEventBus {
                 }
             }
         }
+    }
+
+    fun postSticky(event: Any) {
+        stickyEvents[event.javaClass] = event
+        post(event)
+    }
+
+    fun removeSticky(event: Class<*>) {
+        stickyEvents.remove(event)
     }
 
     fun invokeSubscriber(event: Any) {

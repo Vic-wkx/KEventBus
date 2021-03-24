@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@id/btnThread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Thread"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@id/btnSticky"
         app:layout_constraintStart_toEndOf="@id/btnSend"
         app:layout_constraintTop_toTopOf="@id/btnSend" />
@@ -29,8 +31,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sticky"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@+id/btnRemoveSticky"
         app:layout_constraintStart_toEndOf="@id/btnThread"
+        app:layout_constraintTop_toTopOf="@id/btnSend" />
+
+    <Button
+        android:id="@+id/btnRemoveSticky"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove Sticky"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnSticky"
         app:layout_constraintTop_toTopOf="@id/btnSend" />
 
     <Button
@@ -38,6 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@id/btnUnregister"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnSend" />
@@ -47,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Unregister"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnRegister"
         app:layout_constraintTop_toTopOf="@id/btnRegister" />
@@ -70,6 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Clear"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/svResult" />

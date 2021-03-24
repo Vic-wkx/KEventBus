@@ -27,7 +27,10 @@ class MainActivity : AppCompatActivity() {
             KEventBus.post(AsyncEvent("It's an async message."))
         }
         binding.btnSticky.setOnClickListener {
-            Toast.makeText(this, "Not supported yet.", Toast.LENGTH_SHORT).show()
+            KEventBus.postSticky(StickyEvent("It's a sticky message"))
+        }
+        binding.btnRemoveSticky.setOnClickListener {
+            KEventBus.removeSticky(StickyEvent::class.java)
         }
         binding.btnClear.setOnClickListener {
             binding.tvResult.text = "Result:"
@@ -42,5 +45,10 @@ class MainActivity : AppCompatActivity() {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onAsyncEvent(event: AsyncEvent) {
         Log.d("~~~", "${event.content} ${Thread.currentThread().name}")
+    }
+
+    @Subscribe(sticky = true)
+    fun onStickyEvent(event: StickyEvent) {
+        binding.tvResult.append("\n${event.content}")
     }
 }

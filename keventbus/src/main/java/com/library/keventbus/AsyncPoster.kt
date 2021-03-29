@@ -3,16 +3,16 @@ package com.library.keventbus
 import java.util.concurrent.Executors
 
 class AsyncPoster(private val eventBus: KEventBus) : Runnable {
-    private val queue = mutableListOf<Any>()
+    private val queue = mutableListOf<Pair<SubscriberMethod, Any>>()
     private val executors = Executors.newCachedThreadPool()
 
-    fun post(event: Any) {
-        queue.add(event)
+    fun post(subscriberMethod: SubscriberMethod, event: Any) {
+        queue.add(subscriberMethod to event)
         executors.execute(this)
     }
 
     override fun run() {
-        val event = queue.removeFirst()
-        eventBus.invokeSubscriber(event)
+        val pair = queue.removeFirst()
+        eventBus.invokeSubscriber(pair.first, pair.second)
     }
 }

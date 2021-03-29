@@ -38,13 +38,17 @@ object KEventBus {
         subscriptionsByEventType[event.javaClass]?.forEach {
             when (it.threadMode) {
                 ThreadMode.MAIN -> {
-                    mainPoster.post(event)
+                    mainPoster.post(it, event)
                 }
                 ThreadMode.ASYNC -> {
-                    asyncPoster.post(event)
+                    asyncPoster.post(it, event)
                 }
             }
         }
+    }
+
+    fun invokeSubscriber(subscriberMethod: SubscriberMethod, event: Any) {
+        subscriberMethod.method(subscriberMethod.obj, event)
     }
 
     fun postSticky(event: Any) {
@@ -54,11 +58,5 @@ object KEventBus {
 
     fun removeSticky(event: Class<*>) {
         stickyEvents.remove(event)
-    }
-
-    fun invokeSubscriber(event: Any) {
-        subscriptionsByEventType[event.javaClass]?.forEach {
-            it.method(it.obj, event)
-        }
     }
 }

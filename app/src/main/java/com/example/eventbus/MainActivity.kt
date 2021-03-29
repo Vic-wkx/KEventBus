@@ -1,9 +1,8 @@
 package com.example.eventbus
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.eventbus.databinding.ActivityMainBinding
 import com.library.keventbus.KEventBus
 import com.library.keventbus.Subscribe

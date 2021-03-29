@@ -8,21 +8,19 @@ object KEventBus {
     private val mainPoster = MainPoster(this)
     private val asyncPoster = AsyncPoster(this)
 
+
+    private val index: SubscriberInfoIndex by lazy { Class.forName("com.example.eventbus.KEventBusIndex").newInstance() as SubscriberInfoIndex }
+
     fun register(obj: Any) {
-        // Reflect to get all subscribed methods
-        obj.javaClass.declaredMethods.forEach {
-            if (it.isAnnotationPresent(Subscribe::class.java)) {
-                if (it.parameterTypes.size == 1) {
-                    val eventType = it.parameterTypes.first()
-                    if (eventType !in subscriptionsByEventType) {
-                        subscriptionsByEventType[eventType] = mutableListOf()
-                    }
-                    subscriptionsByEventType[eventType]!!.add(SubscriberMethod(obj, it, it.getAnnotation(Subscribe::class.java)!!.threadMode))
-                    if (it.getAnnotation(Subscribe::class.java)!!.sticky) {
-                        if (stickyEvents[eventType] != null) {
-                            it(obj, stickyEvents[eventType])
-                        }
-                    }
+        index.methodsByClass[obj.javaClass]?.forEach {
+            if (it.eventType !in subscriptionsByEventType) {
+                subscriptionsByEventType[it.eventType] = mutableListOf()
+            }
+            val subscriberMethod = SubscriberMethod(obj, obj.javaClass.getDeclaredMethod(it.methodName, it.eventType), it.threadMode)
+            subscriptionsByEventType[it.eventType]!!.add(subscriberMethod)
+            if (it.sticky) {
+                if (stickyEvents[it.eventType] != null) {
+                    subscriberMethod.method(obj, stickyEvents[it.eventType])
                 }
             }
         }
@@ -65,7 +63,7 @@ object KEventBus {
 
     fun invokeSubscriber(event: Any) {
         subscriptionsByEventType[event.javaClass]?.forEach {
-            it.method(it.eventType, event)
+            it.method(it.obj, event)
         }
     }
 }

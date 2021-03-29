@@ -27,14 +27,9 @@ object KEventBus {
     }
 
     fun unregister(obj: Any) {
-        obj.javaClass.declaredMethods.forEach {
-            if (it.isAnnotationPresent(Subscribe::class.java)) {
-                if (it.parameterTypes.size == 1) {
-                    val event = it.parameterTypes.first()
-                    if (event in subscriptionsByEventType) {
-                        subscriptionsByEventType[event]?.remove(SubscriberMethod(obj, it, it.getAnnotation(Subscribe::class.java)!!.threadMode))
-                    }
-                }
+        index.methodsByClass[obj.javaClass]?.forEach {
+            if (it.eventType in subscriptionsByEventType) {
+                subscriptionsByEventType[it.eventType]?.remove(SubscriberMethod(obj, obj.javaClass.getDeclaredMethod(it.methodName, it.eventType), it.threadMode))
             }
         }
     }
